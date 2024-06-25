@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1690380849 source:g:\sem 4\pocd\oops_project\main.cpp
+	<iostream>
+	<string>
+	<iomanip>
+	<stdexcept>
+
