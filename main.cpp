@@ -2,8 +2,74 @@
 #include <string>
 #include <iomanip>
 #include <stdexcept>
+#include <unordered_map>
 using namespace std;
+// Forward declarations
 class Passenger;
+class schedule;
+class Seat;
+class Bus;
+class ticket;
+class payment;
+class UPIPayment;
+class CardPayment;
+class busSystem;
+
+// User class for registration and login
+class User {
+private:
+    string username;
+    string password;
+
+public:
+    User(string u, string p) : username(u), password(p) {}
+
+    string getUsername() const { return username; }
+    string getPassword() const { return password; }
+};
+
+
+class UserSystem {
+private:
+    unordered_map<string, User*> users;
+    User* loggedInUser;
+
+    UserSystem() : loggedInUser(nullptr) {}
+
+public:
+    static UserSystem& getInstance() {
+        static UserSystem instance;
+        return instance;
+    }
+
+    void registerUser(const string& username, const string& password) {
+        if (users.find(username) != users.end()) {
+            throw runtime_error("User already exists.");
+        }
+        users[username] = new User(username, password);
+        cout << "User registered successfully.\n";
+    }
+
+    bool loginUser(const string& username, const string& password) {
+        if (users.find(username) != users.end() && users[username]->getPassword() == password) {
+            loggedInUser = users[username];
+            cout << "Login successful.\n";
+            return true;
+        }
+        cout << "Invalid username or password.\n";
+        return false;
+    }
+
+    User* getLoggedInUser() const {
+        return loggedInUser;
+    }
+
+    void logoutUser() {
+        loggedInUser = nullptr;
+        cout << "Logged out successfully.\n";
+    }
+};
+
 class schedule
 {
     public: string from;
@@ -66,7 +132,7 @@ class Bus
              int no_of_seats;
              float ticketprice;
              Seat* seats[14]; // Array of seats in the bus
-    public:schedule busSchedule;
+    public: schedule busSchedule;
 
         public:
         Bus(){}
@@ -463,6 +529,10 @@ void printTicketDetails(int ticketNumber)
 //booking a seat
 void bookSeatForTicket(int busNumber, int numSeats)
    {
+    if (UserSystem::getInstance().getLoggedInUser() == nullptr) {
+            cout << "Please log in to book seats.\n";
+            return;
+        }
         int busIndex = findBusNumber(busNumber);
         if (busIndex == -1) {
            throw invalid_argument("Invalid bus number!");
@@ -621,19 +691,23 @@ void viewPassengerListByBus(int busNumber) {
 void displayMenu() {
     cout << "Choose an option:" << endl;
     cout<<" --------------------------------------------------"<<endl;
-    cout << "1. View all available buses" << endl;
-    cout << "2. Find buses by route" << endl;
-    cout << "3. Book a seat" << endl;
-    cout << "4. Check ticket status" << endl;
-    cout << "5. Cancel booking" << endl;
-    cout << "6. View bus details and passengers list on board" << endl;
-    cout << "7. Exit" << endl;
+    cout << "1. Register\n";
+    cout << "2. Login\n";
+    cout << "3. View all available buses" << endl;
+    cout << "4. Find buses by route" << endl;
+    cout << "5. Book a seat" << endl;
+    cout << "6. Check ticket status" << endl;
+    cout << "7. Cancel booking" << endl;
+    cout << "8. View bus details and passengers list on board" << endl;
+    cout << "9.Logout\n";
+    cout << "10. Exit" << endl;
     cout<<" --------------------------------------------------"<<endl<<endl;
 }
 
 int main()
 {
     busSystem& BusSystem = busSystem::getInstance();
+    UserSystem& UserSys = UserSystem::getInstance();
     int busNumber,numseats,ticketNumber;
     string from,to;
     schedule s1("Mumbai","Pune","10:15");
@@ -687,11 +761,34 @@ int main()
 
         switch (choice)
         {
-        case 1: // See availability of buses
+         case 1: { // Register
+            string username, password;
+            cout << "Enter Username: ";
+            cin >> username;
+            cout << "Enter Password: ";
+            cin >> password;
+            try {
+                UserSys.registerUser(username, password);
+            } catch (const runtime_error& e) {
+                cout << "Error: " << e.what() << endl;
+            }
+            break;
+        }
+
+        case 2: { // Login
+            string username, password;
+            cout << "Enter Username: ";
+            cin >> username;
+            cout << "Enter Password: ";
+            cin >> password;
+            UserSys.loginUser(username, password);
+            break;
+        }
+        case 3: // See availability of buses
             BusSystem.viewBusDetails();
             break;
 
-        case 2: try{
+        case 4: try{ // Find buses by route
             cout<<"Enter from city\n";
             cin>>from;
             cout<<"Enter to city\n";
@@ -710,7 +807,7 @@ int main()
              break;
 
 
-        case 3: // Book a seat
+        case 5: // Book a seat
                try{
             cout<<"Enter from city\n";
             cin>>from;
@@ -749,7 +846,8 @@ int main()
             }
             break;
 
-        case 4: try{int ticketNumber;
+        case 6: try{ // Check ticket status
+            int ticketNumber;
                 cout << "Enter Ticket Number: ";
                 cin >> ticketNumber;
                 BusSystem.printTicketDetails(ticketNumber);
@@ -761,7 +859,7 @@ int main()
                 }
                 break;
 
-        case 5: try{
+        case 7: try{
                 cout<<"Enter the Ticket number\n";
                 cin>>ticketNumber;
 
@@ -773,7 +871,7 @@ int main()
                 }
                 break;
 
-        case 6: // View bus details along with the list of passengers
+        case 8: // View bus details along with the list of passengers
                 try{
             cout << "Enter Bus Number: ";
             cin >> busNumber;
@@ -789,8 +887,11 @@ int main()
             }
 
             break;
-
-        case 7: // Exit from the app
+        case 9: { // Logout
+            UserSys.logoutUser();
+            break;
+        }
+        case 10: // Exit from the app
             cout << "Exiting the app. Thank you!\n";
             break;
 
@@ -798,7 +899,7 @@ int main()
             cout << "Invalid choice. Please try again.\n";
         }
 
-    } while (choice != 7);
+    } while (choice != 10);
 
     return 0;
 }
