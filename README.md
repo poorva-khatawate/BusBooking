@@ -53,7 +53,7 @@ The Bus Booking System is a command-line interface (CLI) application designed to
 
 1. **Clone the Repository:**
    ```bash
-   git clone [https://github.com/poorva-khatawate/BusBooking.git]
+   git clone https://github.com/poorva-khatawate/BusBooking.git
 
 2. **Navigate to Project Directory.**
    ```bash
