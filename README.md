@@ -40,17 +40,11 @@ The Bus Booking System is a command-line interface (CLI) application designed to
 
 ## How This Project Helps
 
-- **Efficiency:**  
-   Automates the entire bus booking process, reducing manual effort and potential errors.
-
 - **Resource-Friendly:**  
    Operates in a command-line environment, making it suitable for systems with limited resources or users who prefer text-based interfaces.
 
 - **Scalability:**  
    The OOP-based structure allows for easy extension and modification, ensuring that the system can grow with future requirements.
-
-- **Accessibility:**  
-   The CLI interface ensures that the system can be accessed and used in diverse environments, including remote servers or minimalistic systems without a graphical interface.
 
 - **Reliability:**  
    With built-in exception handling, the system ensures smooth and reliable operation even in cases of unexpected input or errors.
@@ -59,4 +53,8 @@ The Bus Booking System is a command-line interface (CLI) application designed to
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/yourusername/bus-booking-system.git
+   git clone [https://github.com/poorva-khatawate/BusBooking.git]
+
+2. **Navigate to Project Directory.**
+   ```bash
+   cd BusBooking
